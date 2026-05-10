@@ -1,0 +1,20 @@
+pairs:
+- nl: show me 5G speeds of all 3 operators in Kingdom
+  sql: "SELECT operator, ROUND(median_download_mbps, 2) AS median_download_mbps,\
+    \ ROUND(median_upload_mbps, 2) AS median_upload_mbps FROM ookla_aggregated_data\
+    \ WHERE technology_type = '5G' AND operator IN ('STC', 'Mobily', 'Zain') AND\
+    \ place_type = 'country' AND place_name = 'Saudi Arabia' AND aggregation_period\
+    \ = 'Month' ORDER BY operator"
+- nl: show me STC's 5G speed for the past 4 weeks
+  sql: "SELECT time_name, start_date, end_date, median_download_mbps, median_upload_mbps\
+    \ FROM ookla_aggregated_data WHERE operator = 'STC' AND technology_type = '5G'\
+    \ AND aggregation_period = 'Week' ORDER BY start_date DESC LIMIT 4"
+- nl: where should STC invest in 5G / which localities should STC focus on for 5G?
+  sql: "SELECT place_name, ROUND(AVG(CASE WHEN operator = 'STC' THEN median_download_mbps\
+    \ END), 2) AS stc_download, ROUND(AVG(CASE WHEN operator = 'Zain' THEN median_download_mbps\
+    \ END), 2) AS zain_download, ROUND(AVG(CASE WHEN operator = 'Mobily' THEN median_download_mbps\
+    \ END), 2) AS mobily_download FROM ookla_aggregated_data WHERE technology_type\
+    \ = '5G' AND place_type = 'locality' AND aggregation_period = 'Month' GROUP BY\
+    \ place_name HAVING stc_download < zain_download OR stc_download < mobily_download\
+    \ ORDER BY stc_download ASC"
+version: 1

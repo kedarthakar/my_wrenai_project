@@ -1,0 +1,19 @@
+{
+  "tables": {
+    "ookla_aggregated_data": {
+      "description": "",
+      "columns": {
+        "aggregation_period": "this is period over which value is calculated",
+        "time_name": "date",
+        "place_type": "this is locality, area, administrative region or country.",
+        "operator": "these are service providers - STC, Mobily and Zain in Saudi Arabia also called Kingdom",
+        "technology_type": "this is 2G, 3G, 4G or 5G",
+        "mean_download_mbps": "use this when average is mentioned explicitly  in the query",
+        "mean_upload_mbps": "use this when average is mentioned explicitly  in the query",
+        "median_download_mbps": "always use this to calculate speed unless average or mean is mentioned specifically",
+        "median_upload_mbps": "always use this to calculate speed unless average or mean is mentioned specifically",
+        "median_latency_ms": "always use this to calculate speed unless average or mean is mentioned specifically"
+      }
+    }
+  }
+}

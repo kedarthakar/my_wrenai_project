@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Upload Data — Wren Data Intelligence</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;
+    --accent:#6c63ff;--accent-soft:#3d3870;--text:#e8eaf6;--text-muted:#8b90b0;
+    --success:#4caf50;--error:#ff5252;--radius:12px;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+  header{display:flex;align-items:center;gap:12px;padding:14px 24px;
+    background:var(--surface);border-bottom:1px solid var(--border);}
+  .logo{width:32px;height:32px;background:var(--accent);border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;}
+  header h1{font-size:17px;font-weight:600;}
+  .nav-links{margin-left:auto;display:flex;gap:10px;align-items:center;}
+  .nav-link{font-size:13px;color:var(--text-muted);text-decoration:none;
+    padding:6px 14px;border:1px solid var(--border);border-radius:8px;transition:all .15s;}
+  .nav-link:hover{border-color:var(--accent);color:var(--text);}
+  .nav-link.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+  main{flex:1;display:flex;flex-direction:column;align-items:center;
+    padding:48px 24px;gap:32px;max-width:760px;margin:0 auto;width:100%;}
+
+  .section-title{font-size:22px;font-weight:700;text-align:center;}
+  .section-sub{font-size:14px;color:var(--text-muted);text-align:center;line-height:1.6;}
+
+  /* drop zone */
+  #drop-zone{
+    width:100%;border:2px dashed var(--border);border-radius:var(--radius);
+    padding:48px 32px;display:flex;flex-direction:column;align-items:center;
+    gap:12px;cursor:pointer;transition:all .2s;background:var(--surface);
+  }
+  #drop-zone.dragover{border-color:var(--accent);background:var(--accent-soft);}
+  #drop-zone .icon{font-size:40px;}
+  #drop-zone p{font-size:15px;color:var(--text-muted);}
+  #drop-zone span{font-size:13px;color:var(--text-muted);}
+  #file-input{display:none;}
+  .browse-btn{
+    padding:8px 20px;border-radius:8px;border:1px solid var(--border);
+    background:var(--surface2);color:var(--text);cursor:pointer;font-size:13px;
+    transition:all .15s;
+  }
+  .browse-btn:hover{border-color:var(--accent);}
+
+  /* file list */
+  #file-list{width:100%;display:flex;flex-direction:column;gap:8px;}
+  .file-item{
+    display:flex;align-items:center;gap:12px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:10px;padding:12px 16px;
+  }
+  .file-icon{font-size:20px;}
+  .file-name{font-size:14px;font-weight:500;flex:1;}
+  .file-size{font-size:12px;color:var(--text-muted);}
+  .file-remove{background:none;border:none;color:var(--text-muted);cursor:pointer;
+    font-size:18px;padding:0 4px;transition:color .15s;}
+  .file-remove:hover{color:var(--error);}
+
+  /* process button */
+  #process-btn{
+    padding:14px 40px;border-radius:10px;border:none;
+    background:var(--accent);color:#fff;font-size:15px;font-weight:600;
+    cursor:pointer;transition:opacity .15s;width:100%;
+  }
+  #process-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #process-btn:hover:not(:disabled){opacity:.85;}
+
+  /* progress log */
+  #progress-wrap{width:100%;display:none;flex-direction:column;gap:12px;}
+  #log{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:16px;font-family:'Menlo',monospace;font-size:13px;
+    max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;
+  }
+  #log::-webkit-scrollbar{width:5px;}
+  #log::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .log-line{color:var(--text-muted);display:flex;gap:8px;align-items:flex-start;}
+  .log-line.success{color:#4caf50;}
+  .log-line.error{color:var(--error);}
+  .log-ts{flex-shrink:0;color:#555;font-size:11px;margin-top:1px;}
+
+  /* spinner */
+  .spinner{
+    width:16px;height:16px;border:2px solid var(--border);
+    border-top-color:var(--accent);border-radius:50%;
+    animation:spin .7s linear infinite;flex-shrink:0;margin-top:2px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* results */
+  #results-wrap{width:100%;display:none;flex-direction:column;gap:16px;}
+  .result-header{font-size:16px;font-weight:600;color:var(--success);}
+  .models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;}
+  .model-card{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:16px;display:flex;flex-direction:column;gap:6px;
+  }
+  .model-name{font-size:15px;font-weight:600;}
+  .model-meta{font-size:12px;color:var(--text-muted);}
+
+  .start-btn{
+    padding:14px 40px;border-radius:10px;border:none;
+    background:var(--success);color:#fff;font-size:15px;font-weight:600;
+    cursor:pointer;transition:opacity .15s;width:100%;text-decoration:none;
+    display:block;text-align:center;
+  }
+  .start-btn:hover{opacity:.85;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">📡</div>
+  <h1>Wren Data Intelligence</h1>
+  <nav class="nav-links">
+    <a href="/" class="nav-link">Chat</a>
+    <a href="/metadata" class="nav-link">Schema</a>
+    <a href="/setup" class="nav-link active">Upload</a>
+  </nav>
+</header>
+
+<main>
+  <div>
+    <div class="section-title">Upload your data</div>
+    <div class="section-sub" style="margin-top:8px">
+      Drop one or more CSV files. The agent will auto-detect schema,<br>
+      generate MDL models, and make them queryable in the chat.
+    </div>
+  </div>
+
+  <!-- drop zone -->
+  <div id="drop-zone" onclick="document.getElementById('file-input').click()">
+    <div class="icon">📂</div>
+    <p>Drag &amp; drop CSV files here</p>
+    <button class="browse-btn" onclick="event.stopPropagation();document.getElementById('file-input').click()">Browse files</button>
+    <span>Supports multiple CSV files</span>
+    <input type="file" id="file-input" accept=".csv" multiple onchange="handleFileSelect(this.files)"/>
+  </div>
+
+  <!-- selected files -->
+  <div id="file-list"></div>
+
+  <!-- process button -->
+  <button id="process-btn" disabled onclick="processFiles()">Generate MDL &amp; Load Data</button>
+
+  <!-- progress -->
+  <div id="progress-wrap">
+    <div style="font-size:14px;font-weight:600;">Processing...</div>
+    <div id="log"></div>
+  </div>
+
+  <!-- results -->
+  <div id="results-wrap">
+    <div class="result-header">✓ Setup complete — models ready</div>
+    <div class="models-grid" id="models-grid"></div>
+    <a href="/" class="start-btn">Start querying your data →</a>
+  </div>
+</main>
+
+<script>
+let selectedFiles = [];
+
+// ── drag & drop ───────────────────────────────────────────────────────────────
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFileSelect(e.dataTransfer.files);
+});
+
+function handleFileSelect(files) {
+  for (const f of files) {
+    if (f.name.endsWith('.csv') && !selectedFiles.find(x => x.name === f.name)) {
+      selectedFiles.push(f);
+    }
+  }
+  renderFileList();
+}
+
+function removeFile(name) {
+  selectedFiles = selectedFiles.filter(f => f.name !== name);
+  renderFileList();
+}
+
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  list.innerHTML = selectedFiles.map(f => `
+    <div class="file-item">
+      <span class="file-icon">📄</span>
+      <span class="file-name">${escHtml(f.name)}</span>
+      <span class="file-size">${(f.size/1024).toFixed(1)} KB</span>
+      <button class="file-remove" onclick="removeFile('${escHtml(f.name)}')" title="Remove">×</button>
+    </div>
+  `).join('');
+  document.getElementById('process-btn').disabled = selectedFiles.length === 0;
+}
+
+// ── upload & process ──────────────────────────────────────────────────────────
+async function processFiles() {
+  if (!selectedFiles.length) return;
+
+  document.getElementById('process-btn').disabled = true;
+  document.getElementById('progress-wrap').style.display = 'flex';
+  document.getElementById('results-wrap').style.display = 'none';
+  const log = document.getElementById('log');
+  log.innerHTML = '';
+
+  function addLog(msg, type = '') {
+    const now = new Date().toLocaleTimeString('en-GB', {hour12: false});
+    const line = document.createElement('div');
+    line.className = `log-line${type ? ' ' + type : ''}`;
+
+    if (type === 'loading') {
+      line.innerHTML = `<div class="spinner"></div><span>${escHtml(msg)}</span>`;
+    } else {
+      line.innerHTML = `<span class="log-ts">${now}</span><span>${escHtml(msg)}</span>`;
+    }
+    line.id = type === 'loading' ? 'loading-line' : '';
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+    return line;
+  }
+
+  // Remove old loading indicator
+  function clearLoading() {
+    const el = document.getElementById('loading-line');
+    if (el) el.remove();
+  }
+
+  const loadingLine = addLog('Uploading files...', 'loading');
+
+  const formData = new FormData();
+  for (const f of selectedFiles) formData.append('files', f);
+
+  let response;
+  try {
+    response = await fetch('/api/upload', { method: 'POST', body: formData });
+  } catch (e) {
+    clearLoading();
+    addLog('Network error: ' + e, 'error');
+    document.getElementById('process-btn').disabled = false;
+    return;
+  }
+
+  clearLoading();
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let finalModels = null;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop(); // keep incomplete chunk
+
+    for (const part of parts) {
+      if (!part.startsWith('data: ')) continue;
+      let msg;
+      try { msg = JSON.parse(part.slice(6)); } catch { continue; }
+
+      if (msg.error) {
+        addLog('✗ ' + msg.error, 'error');
+        if (msg.traceback) addLog(msg.traceback, 'error');
+        document.getElementById('process-btn').disabled = false;
+        return;
+      }
+      if (msg.step) {
+        const isSuccess = msg.step.startsWith('✓');
+        addLog(msg.step, isSuccess ? 'success' : '');
+      }
+      if (msg.done) {
+        finalModels = msg.models;
+      }
+    }
+  }
+
+  if (finalModels) {
+    showResults(finalModels);
+  }
+}
+
+function showResults(models) {
+  const wrap = document.getElementById('results-wrap');
+  const grid = document.getElementById('models-grid');
+  grid.innerHTML = models.map(m => `
+    <div class="model-card">
+      <div class="model-name">📊 ${escHtml(m.name)}</div>
+      <div class="model-meta">${m.rows.toLocaleString()} rows · ${m.columns} columns</div>
+    </div>
+  `).join('');
+  wrap.style.display = 'flex';
+  wrap.scrollIntoView({ behavior: 'smooth' });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

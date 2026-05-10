@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "wren-dlt-connector": {
+      "source": "Canner/wren-engine",
+      "sourceType": "github",
+      "skillPath": "skills/wren-dlt-connector/SKILL.md",
+      "computedHash": "a159eef94cced3643484a88b0a36ebbd42919af8b73908a78db7521f9b7d61c1"
+    },
+    "wren-generate-mdl": {
+      "source": "Canner/wren-engine",
+      "sourceType": "github",
+      "skillPath": "skills/wren-generate-mdl/SKILL.md",
+      "computedHash": "43f564195484daaa65a401beeae1dac32b9476cd66b513138b9506bf9a8cd319"
+    },
+    "wren-onboarding": {
+      "source": "Canner/wren-engine",
+      "sourceType": "github",
+      "skillPath": "skills/wren-onboarding/SKILL.md",
+      "computedHash": "7d2beff463417a1946c36ea414eb9c8f67b91e77d8c11792ac391942addb2cf5"
+    },
+    "wren-usage": {
+      "source": "Canner/wren-engine",
+      "sourceType": "github",
+      "skillPath": "skills/wren-usage/SKILL.md",
+      "computedHash": "aa94c8b4a41cc0701f8e8c4eafcd928d2b09dc0b7d15d545a26e81670c4b3faf"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+name: ookla_aggregated_data
+table_reference:
+  catalog: data
+  schema: main
+  table: "ookla_aggregated_data"
+columns:
+  - name: "aggregation_period"
+    type: TEXT
+  - name: "time_name"
+    type: TEXT
+  - name: "start_date"
+    type: DATE
+  - name: "end_date"
+    type: DATE
+  - name: "place_type"
+    type: TEXT
+  - name: "place_name"
+    type: TEXT
+  - name: "operator"
+    type: TEXT
+  - name: "technology_type"
+    type: TEXT
+  - name: "test_count"
+    type: BIGINT
+  - name: "sample_count"
+    type: BIGINT
+  - name: "device_count"
+    type: BIGINT
+  - name: "mean_download_mbps"
+    type: DOUBLE
+  - name: "mean_upload_mbps"
+    type: DOUBLE
+  - name: "mean_latency_ms"
+    type: DOUBLE
+  - name: "mean_rank"
+    type: BIGINT
+  - name: "median_download_mbps"
+    type: DOUBLE
+  - name: "median_upload_mbps"
+    type: DOUBLE
+  - name: "median_latency_ms"
+    type: DOUBLE
+  - name: "median_rank"
+    type: BIGINT
+  - name: "filename"
+    type: TEXT
+  - name: "multi_server_latency"
+    type: DOUBLE
+  - name: "multi_server_jitter"
+    type: DOUBLE

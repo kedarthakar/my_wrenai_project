@@ -1,0 +1,23 @@
+# secrets
+.env
+web/.env
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+*.egg-info/
+
+# wren memory index (rebuilt on first run)
+.wren/
+
+# data (too large for git — share separately)
+data/data.duckdb
+*.duckdb
+*.csv
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db

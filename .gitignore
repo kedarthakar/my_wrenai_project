@@ -1,6 +1,9 @@
 # secrets
 .env
-web/.env
+
+# local dev tools
+.claude/
+skills-lock.json
 
 # python
 __pycache__/

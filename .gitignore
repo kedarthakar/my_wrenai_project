@@ -18,6 +18,9 @@ data/data.duckdb
 *.csv
 uploads/
 
+# streamlit secrets (local dev only — set in Streamlit Cloud dashboard)
+.streamlit/secrets.toml
+
 # OS
 .DS_Store
 Thumbs.db

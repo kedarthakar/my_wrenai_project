@@ -160,6 +160,9 @@ def handle_query(question: str) -> dict:
 
     # ── SQL execution (via WrenEngine if available, else direct DuckDB) ────────
     sql = plan.get("sql", "")
+    db_path = DATA_DIR / "data.duckdb"
+    if not db_path.exists():
+        return {"error": "No data loaded. Go to the Setup page to upload your CSV files first.", "sql": sql}
     engine = state.get("engine")
     t1 = time.time()
     try:
